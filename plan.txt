@@ -1,0 +1,48 @@
+gestionTurnos/
+
+    Menú:
+    0- Nombre Clinica
+       Descripcion
+       Direccion
+       Numero
+       ----------------
+       Registro
+
+    1- Iniciar sesión
+       Ver disponibilidad
+       Ver especialidades
+       Salir
+
+    1.1- Ingresar DNI
+         Salir
+
+    1.1.2- Crear usuario
+           Iniciar sesión
+           Salir
+
+    1.1.3- CRUD Cliente
+           Salir
+
+    1.1.4- CRUD Turno
+           Cerrar sesión
+           Salir
+
+    1.2- Cardiologia
+         Ginecologia
+         Otorrino
+         Pediatria
+         Urología
+
+
+Lógica en el servicio que gestiona los turnos:
+
+Paso 1: Recibe la solicitud de turno con la fecha, hora y médico.
+
+Paso 2: Ejecuta la consulta de disponibilidad.
+SELECT * FROM BD WHERE (Fecha, Hora, ID_Medico)
+
+Paso 3: Si el turno está disponible, procede a reservarlo:
+INSERT INTO Turno (Fecha, Hora, ID_Medico, ID_Cliente)
+VALUES ('2024-09-01', '10:00', 1);
+
+Paso 4: Si el turno no está disponible, devuelve un mensaje al usuario indicando la falta de disponibilidad.
