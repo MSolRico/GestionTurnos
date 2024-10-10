@@ -117,16 +117,25 @@ int Cliente::validarOpcion(int min, int max) {
     string entrada;
     while (true) {
         getline(cin, entrada); // Lee la entrada como string
-
-        // Convertir la entrada a un número entero
-        opcion = atoi(entrada.c_str()); // Usar atoi para convertir string a int
-
-        // Verificar si la entrada es válida
-        if (entrada.empty() || (opcion < min || opcion > max)) {
-            cout << "Opción incorrecta. Intente nuevamente." << endl;
+        // Verificar si la entrada es válida (no vacía)
+        if (entrada.empty()) {
+            cout << "Entrada vacia. Intente nuevamente." << endl;
+            continue; // Volver al inicio del bucle
         }
-        else {
-            return opcion; // Devuelve la opción válida
+        try {
+            opcion = stoi(entrada); // Usar stoi para convertir string a int
+            if (opcion < min || opcion > max) { // Verificar si la opción está dentro del rango permitido
+                cout << "Opcion incorrecta. Intente nuevamente." << endl;
+            }
+            else {
+                return opcion; // Devuelve la opción válida
+            }
+        }
+        catch (const invalid_argument& e) {
+            cout << "Error: debe ingresar un numero valido." << endl; // Manejo de excepción si no se puede convertir
+        }
+        catch (const out_of_range& e) {
+            cout << "Error: el numero ingresado esta fuera del rango permitido." << endl; // Manejo si el número es muy grande
         }
     }
 }

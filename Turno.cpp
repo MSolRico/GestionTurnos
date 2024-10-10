@@ -46,7 +46,37 @@ void Turno::setCreated_at(const string& c) { created_at = c; }
 void Turno::setUpdated_at(const string& u) { updated_at = u; }
 
     //Metodos getter
-int Turno::getId_Turno() const { return id_Turno; }
+vector<int> Turno::getId_Turno(int id_Cliente) {
+    vector<int> idTurnos;
+
+    // Consulta SQL para obtener los id_Turno asociados al id_Cliente
+    string consultaStr = "SELECT id_Turno FROM turno WHERE id_Cliente = " + to_string(id_Cliente);
+
+    const char* consulta = consultaStr.c_str();  // Convertir a const char* para usarlo en mysql_query
+
+    if (mysql_query(conexion->getConector(), consulta)) {
+        cerr << "Error al obtener los ID de turnos: " << mysql_error(conexion->getConector()) << endl;
+        return idTurnos; // Devuelve un vector vacío si hay error
+    }
+
+    MYSQL_RES* resultado = mysql_store_result(conexion->getConector());
+    if (!resultado) {
+        cerr << "Error al almacenar el resultado: " << mysql_error(conexion->getConector()) << endl;
+        return idTurnos; // Devuelve un vector vacío si hay error
+    }
+
+    MYSQL_ROW fila;
+    // Iterar sobre los resultados de la consulta
+    while ((fila = mysql_fetch_row(resultado))) {
+        int idTurno = atoi(fila[0]); // Convertir el resultado a entero
+        idTurnos.push_back(idTurno); // Agregar el id_Turno al vector
+    }
+
+    mysql_free_result(resultado); // Liberar el resultado
+
+    return idTurnos; // Devuelve el vector con los ID de turnos
+}
+
 string Turno::getFecha() const { return fecha; }
 string Turno::getHora() const { return hora; }
 int Turno::getId_Cliente() const { return id_Cliente; }
@@ -138,29 +168,6 @@ void Turno::crearTurno() {
 int Turno::existeTurno(int id_Doctor, const string& fecha, const string& hora) {
     string consultaStr = "SELECT COUNT(*) FROM turno WHERE id_Doctor = " + to_string(id_Doctor) +
         " AND fecha = '" + fecha + "' AND hora = '" + hora + "'";
-
-    const char* consulta = consultaStr.c_str();
-
-    if (mysql_query(conexion->getConector(), consulta)) {
-        cerr << "Error al verificar el turno: " << mysql_error(conexion->getConector()) << endl;
-        return false; // En caso de error, asumimos que el turno no existe
-    }
-
-    MYSQL_RES* resultado = mysql_store_result(conexion->getConector());
-    if (!resultado) {
-        cerr << "Error al almacenar el resultado: " << mysql_error(conexion->getConector()) << endl;
-        return false; // En caso de error, asumimos que el turno no existe
-    }
-
-    MYSQL_ROW fila = mysql_fetch_row(resultado);
-    int existe = atoi(fila[0]); // Si hay más de 0, existe el turno
-
-    mysql_free_result(resultado);
-    return existe;
-}
-
-int Turno::buscarTurno(int id_Cliente) {
-    string consultaStr = "SELECT COUNT(*) FROM turno WHERE id_Cliente = " + to_string(id_Cliente);
 
     const char* consulta = consultaStr.c_str();
 

@@ -31,7 +31,7 @@ public:
     void setUpdated_at(const string& u);
 
     // Métodos get (mostrar)
-    int getId_Turno() const;
+    vector<int> getId_Turno(int id_Cliente);
     string getFecha() const;
     string getHora() const;
     int getId_Cliente() const;
@@ -46,7 +46,6 @@ public:
     // Métodos CRUD
     void crearTurno();
     int existeTurno(int id_Doctor, const string& fecha, const string& hora);
-    int buscarTurno(int id_Cliente);
     vector<string> leerTurnos(int id_Cliente);
     void actualizarTurno(string campo, string valor, int id_Turno);
     void eliminarTurno(int id_Turno);
