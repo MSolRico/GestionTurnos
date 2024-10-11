@@ -178,6 +178,7 @@ vector<string> Menu::crearMenu(const vector<string>& opciones) const {
 
 // Muestra un submenú con las opciones dadas
 void Menu::mostrarMenu(const vector<string>& opciones) {
+	system("cls");
 	vector<string> menu = crearMenu(opciones);
 	dibujarRectangulo(menu);
 }
