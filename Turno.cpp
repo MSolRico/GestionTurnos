@@ -165,7 +165,7 @@ void Turno::crearTurno() {
     conexion->ejecutarConsulta(consulta);
 }
 
-int Turno::existeTurno(int id_Doctor, const string& fecha, const string& hora) {
+bool Turno::existeTurno(int id_Doctor, const string& fecha, const string& hora) {
     string consultaStr = "SELECT COUNT(*) FROM turno WHERE id_Doctor = " + to_string(id_Doctor) +
         " AND fecha = '" + fecha + "' AND hora = '" + hora + "'";
 
@@ -183,7 +183,7 @@ int Turno::existeTurno(int id_Doctor, const string& fecha, const string& hora) {
     }
 
     MYSQL_ROW fila = mysql_fetch_row(resultado);
-    int existe = atoi(fila[0]); // Si hay más de 0, existe el turno
+    bool existe = (atoi(fila[0])>0); // Si hay más de 0, existe el turno
 
     mysql_free_result(resultado);
     return existe;
@@ -220,9 +220,9 @@ vector<string> Turno::leerTurnos(int id_Cliente) {
         std::string doctorApellido = fila[2] ? fila[2] : "N/A";
         std::string especialidad = fila[3] ? fila[3] : "N/A";
         std::string fecha = fila[4] ? fila[4] : "N/A";
-        std::string hora = fila[5] ? fila[5] : "N/A"; // Asegúrate de que el índice sea correcto
+        std::string hora = fila[5] ? fila[5] : "N/A"; // Asegurarse de que el índice sea correcto
 
-        // Mostrar los resultados en el formato solicitado
+        // Mostrar los resultados
         turnos.push_back({ "Turno: " + idTurno });
         turnos.push_back({ "Doctor: " + doctorApellido + ", " + doctorNombre });
         turnos.push_back({ "Especialidad: " + especialidad });
@@ -236,15 +236,28 @@ vector<string> Turno::leerTurnos(int id_Cliente) {
     return turnos;
 }
 
-void Turno::actualizarTurno(string campo, string valor, int id_Turno) {
-    string consulta = "UPDATE turno SET " + campo + " = '" + valor + "', updated_at = NOW() WHERE id_Turno = " 
-        + to_string(id_Turno);
+void Turno::actualizarTurno(const vector<string>& campos, const vector<string>& nuevosValores, int id) {
+    if (campos.size() != nuevosValores.size()) { // Verificamos que el tamaño de ambos vectores sea igual
+        cerr << "Error: La cantidad de campos y valores no coincide." << endl;
+        return;
+    }
+
+    string consulta = "UPDATE turnos SET ";
+
+    for (size_t i = 0; i < campos.size(); ++i) {
+        consulta += campos[i] + " = '" + nuevosValores[i] + "'";
+
+        if (i < campos.size() - 1) { // Añadir una coma entre cada campo, excepto el último
+            consulta += ", ";
+        }
+    }
+
+    consulta += " WHERE id = " + to_string(id) + ";";
 
     if (mysql_query(conexion->getConector(), consulta.c_str())) {
-        cerr << "Error al actualizar el turno: " << mysql_error(conexion->getConector()) << endl;
-    }
-    else {
-        cout << "El turno ha sido actualizado correctamente." << endl;
+        cout << "Turno actualizado correctamente." << endl;
+    } else {
+        cerr << "Error al actualizar el turno en la base de datos." << endl;
     }
 }
 
@@ -259,11 +272,9 @@ void Turno::eliminarTurno(int id_Turno) {
         return;
     }
 
-    // Consulta SQL para eliminar el turno
     string consulta = "DELETE FROM turno WHERE id_Turno=" + to_string(id_Turno);
- 
-    // Ejecutar la consulta
-    if (mysql_query(conexion->getConector(), consulta.c_str())) {
+    
+    if (mysql_query(conexion->getConector(), consulta.c_str())) { // Ejecutar la consulta
         cerr << "Error al eliminar el turno: " << mysql_error(conexion->getConector()) << endl;
     }
     else {

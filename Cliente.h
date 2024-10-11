@@ -59,6 +59,6 @@ public:
     void crearCliente();
     int buscarCliente();
     vector<string> mostrarCliente(const string& dni);
-    void actualizarCliente(const string& dni);
+    void actualizarCliente(int id_Cliente);
     void eliminarCliente(const string& dni);
 };

@@ -211,7 +211,7 @@ vector<string> Cliente::mostrarCliente(const string& dni) {
     return datosCliente;  // Retorna el vector con los datos del cliente
 }
 
-void Cliente::actualizarCliente(const string& dni) {
+void Cliente::actualizarCliente(int id_Cliente) {
     vector<string> datos = mostrarCliente(dni);
 
     if (datos.empty()) {
@@ -228,19 +228,12 @@ void Cliente::actualizarCliente(const string& dni) {
     int opcion;
     cout << "\nIngrese la opcion que se requiera (1-7)" << endl;
     opcion = validarOpcion(1, 7);
-
-    if (opcion < 1 || opcion > 7) {
-        cerr << "Opcion no valida." << endl;
-        return;
-    }
-
     string nuevoValor;
 
     if (opcion == 5) { // Si se selecciona la opción 5 (fecha de nacimiento), usar la función de validación
         bool fechaValida = false;
         do {
             cout << "Introduce la nueva fecha de nacimiento (aaaa-mm-dd): ";
-            cin.ignore();  // Limpiar el buffer antes de pedir el nuevo valor
             getline(cin, nuevoValor);
             if (validarFecha(nuevoValor)) {
                 fechaValida = true;
@@ -253,24 +246,38 @@ void Cliente::actualizarCliente(const string& dni) {
     else {
         // Pedir el nuevo valor para los otros campos
         cout << "Introduce el nuevo valor: ";
-        cin.ignore();  // Limpiar el buffer antes de pedir el nuevo valor
         getline(cin, nuevoValor);
     }
 
     // Definir el nombre del campo correspondiente a la opción seleccionada
     string campo;
     switch (opcion) {
-    case 1: campo = "dni"; break;
-    case 2: campo = "nombre"; break;
-    case 3: campo = "apellido"; break;
-    case 4: campo = "obraSocial"; break;
-    case 5: campo = "fechaNac"; break;
-    case 6: campo = "direccion"; break;
-    case 7: campo = "telefono"; break;
+    case 1: campo = "dni"; 
+        setDni(nuevoValor);
+        break;
+    case 2: campo = "nombre"; 
+        setNombre(nuevoValor);
+        break;
+    case 3: campo = "apellido"; 
+        setApellido(nuevoValor);
+        break;
+    case 4: campo = "obraSocial"; 
+        setObraSocial(nuevoValor);
+        break;
+    case 5: campo = "fechaNac"; 
+        setFechaNac(nuevoValor);
+        break;
+    case 6: campo = "direccion"; 
+        setDireccion(nuevoValor);
+        break;
+    case 7: campo = "telefono"; 
+        setTelefono(nuevoValor);
+        break;
     }
 
     // Actualizar el campo seleccionado y la fecha de actualización (updated_at)
-    string consulta = "UPDATE cliente SET " + campo + " = '" + nuevoValor + "', updated_at = NOW() WHERE dni = '" + dni + "'";
+    string consulta = "UPDATE cliente SET " + campo + " = '" + nuevoValor + "', updated_at = NOW() WHERE id_Cliente = " + to_string(id_Cliente);
+    cout << nuevoValor;
 
     if (mysql_query(conexion->getConector(), consulta.c_str())) {
         cerr << "Error al actualizar el cliente: " << mysql_error(conexion->getConector()) << endl;

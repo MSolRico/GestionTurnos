@@ -24,7 +24,7 @@ private:
     vector<string> crearMenu(const vector<string>& opciones) const; // Crea el diseño de un menú
     void mostrarMenu(const vector<string>& opciones);             // Muestra un menú
     int validarOpcion(int min, int max);                          // Valida la opción seleccionada
-    void iniciarSesion();                                         // Inicia sesión del cliente
+    bool iniciarSesion();                                         // Inicia sesión del cliente
     void registrarCliente();                                      // Registra un nuevo cliente
     void solicitarTurno();                                        // Solicita un nuevo turno
     void modificarTurno();                                        // Modificar turno existente

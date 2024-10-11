@@ -45,8 +45,8 @@ public:
 
     // Métodos CRUD
     void crearTurno();
-    int existeTurno(int id_Doctor, const string& fecha, const string& hora);
+    bool existeTurno(int id_Doctor, const string& fecha, const string& hora);
     vector<string> leerTurnos(int id_Cliente);
-    void actualizarTurno(string campo, string valor, int id_Turno);
+    void actualizarTurno(const vector<string>& campos, const vector<string>& nuevosValores, int id);
     void eliminarTurno(int id_Turno);
 };
