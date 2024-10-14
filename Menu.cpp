@@ -15,6 +15,7 @@ Menu::Menu(int ancho, int alto, ConexionBD* con) : ancho(ancho), alto(alto), cli
 void Menu::iniciar() {
 	int opcion;
 	bool iniciado = false; // Para saber si inicio sesion
+	bool continuar = true;  // Para controlar si se debe seguir mostrando el menú
 	vector<string> aux;
 	do {
 		mostrarMenu({ "1. Contacto de la clinica", "2. Profesionales de la salud", "3. Iniciar Sesion", "4. Salir" }); // Principal
@@ -67,9 +68,10 @@ void Menu::iniciar() {
 							break;
 						case 2: // Eliminar
 							cliente.eliminarCliente(cliente.getDni());
+							continuar = false;
 							break;
 						}
-					} while (opcion == 1);
+					} while (opcion == 1 && continuar);
 					break;
 				case 2: // CRUD Turno
 					do {
@@ -139,7 +141,7 @@ void Menu::iniciar() {
 					iniciado = false; // Cerró sesion
 					break;
 				}
-			} while (iniciado);
+			} while (iniciado && continuar); // Mientras no se cierre sesión ni se haya eliminado la cuenta
 			break;
 		case 4: // Cerrar el programa
 			cout << "Saliendo del programa..." << endl;
