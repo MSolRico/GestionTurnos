@@ -27,6 +27,7 @@ private:
     bool iniciarSesion();                                         // Inicia sesión del cliente
     void registrarCliente();                                      // Registra un nuevo cliente
     void solicitarTurno();                                        // Solicita un nuevo turno
+    void modificarCliente();                                      // Modificar cliente existente
     void modificarTurno();                                        // Modificar turno existente
 
 public:

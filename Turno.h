@@ -32,10 +32,10 @@ public:
 
     // Métodos get (mostrar)
     vector<int> getId_Turno(int id_Cliente);
-    string getFecha() const;
-    string getHora() const;
+    string getFecha(int id) const;
+    string getHora(int id) const;
     int getId_Cliente() const;
-    int getId_Doctor() const;
+    int getId_Doctor(int id) const;
     string getCreated_at() const;
     string getUpdated_at() const;
 

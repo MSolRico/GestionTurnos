@@ -29,6 +29,7 @@ void Menu::iniciar() {
 			opcion = validarOpcion(1, 1);
 			break;
 		case 2: // Doctores
+			aux.clear();
 			aux = mostrarDoctores(con);
 			aux.push_back(""); // Nuevo elemento se coloca después del último elemento
 			aux.push_back("1. Atras");
@@ -50,6 +51,7 @@ void Menu::iniciar() {
 				switch (opcion) {
 				case 1: // CRUD Cliente
 					do {
+						aux.clear();
 						aux = cliente.mostrarCliente(cliente.getDni());
 						aux.push_back(""); // Nuevo elemento se coloca después del último elemento
 						aux.push_back("1. Modificar dato");
@@ -60,6 +62,7 @@ void Menu::iniciar() {
 						opcion = validarOpcion(1, 3);
 						switch (opcion) {
 						case 1: // Actualizar
+							modificarCliente();
 							cliente.actualizarCliente(cliente.getId_Cliente());
 							break;
 						case 2: // Eliminar
@@ -78,6 +81,7 @@ void Menu::iniciar() {
 							solicitarTurno();
 							break;
 						case 2: // Ver turnos
+							aux.clear();
 							aux = turno.leerTurnos(cliente.getId_Cliente()); // Mostrar turnos
 							if (aux.empty()) {
 								aux.push_back("No tienes ningun turno registrado");
@@ -90,6 +94,8 @@ void Menu::iniciar() {
 							}
 							else {
 								do {
+									aux.clear();
+									aux = turno.leerTurnos(cliente.getId_Cliente());
 									aux.push_back(""); // Nuevo elemento se coloca después del último elemento
 									aux.push_back("1. Modificar turno");
 									aux.push_back("2. Eliminar turno");
@@ -102,20 +108,23 @@ void Menu::iniciar() {
 										modificarTurno();
 										break;
 									case 2: // Eliminar turnos
+										aux.clear();
 										aux = turno.leerTurnos(cliente.getId_Cliente()); // Mostrar turnos
 										aux.push_back(""); // Nuevo elemento se coloca después del último elemento
 										aux.push_back("Ingrese el numero del turno a eliminar");
-										vector<int> turnos = turno.getId_Turno(cliente.getId_Cliente()); // Cantidad de turnos
+										mostrarMenu(aux);
+										vector<int> turnos = turno.getId_Turno(cliente.getId_Cliente()); 
+										cout << "Ingrese la opcion que se requiera: " << endl;
 										bool encontrado = false;
 										do {
-											opcion = validarOpcion(1, turnos.size()); // id a eliminar
-											for (int valor : turnos) { // Verificar si la opción está en el vector de turnos
-												if (opcion == valor) {
-													encontrado = true;  // Coincidencia encontrada
-													break;  // Terminar el bucle si se encuentra una coincidencia
-												}
+											opcion = validarOpcion(1, turnos.back());
+											if (find(turnos.begin(), turnos.end(), opcion) == turnos.end()) { // Verificar si el Id_Turno está en la lista de turnos
+												cout << "Opcion no valida. Intente nuevamente." << endl;
 											}
-											cout << "Opcion no valida. Intente nuevamente." << endl;
+											else {
+												encontrado = true; // Si el Id_Turno es válido, salir del bucle
+											}
+
 										} while (!encontrado); // Repetir hasta que se encuentre una opción válida
 										turno.eliminarTurno(opcion); // Eliminar turno
 										break;
@@ -267,7 +276,7 @@ void Menu::registrarCliente() {
 
 void Menu::solicitarTurno() {
 	mostrarMenu(mostrarDoctores(con));
-	cout << "Ingrese la opcion que se requiera (1-5)" << endl;
+	cout << "Ingrese el ID del doctor con quien desea programar el turno (1-5)" << endl;
 	int opcion = validarOpcion(1, 5);
 	turno.setId_Doctor(opcion);
 
@@ -292,39 +301,49 @@ void Menu::solicitarTurno() {
 	turno.crearTurno();
 }
 
+void Menu::modificarCliente() {
+	vector<string> datos = cliente.mostrarCliente(cliente.getDni());
+	vector <string> aux4;
+
+	if (datos.empty()) {
+		cerr << "Cliente no encontrado. No se puede modificar." << endl;
+		return;
+	}
+
+	// Mostrar los datos del cliente y el menú para elegir qué campo modificar
+	aux4.push_back("Elige el numero del campo que deseas modificar :" );
+	for (size_t i = 0; i < datos.size(); i++) {
+		aux4.push_back(to_string(i+1) + ". " + datos[i]);
+	}
+	mostrarMenu(aux4);
+}
+
 void Menu::modificarTurno() {
 	vector<string> aux3;
 	int opcion, id;
 	aux3 = turno.leerTurnos(cliente.getId_Cliente()); // Mostrar turnos
 	aux3.push_back(""); // Nuevo elemento se coloca después del último elemento
 	aux3.push_back("Ingrese el numero del turno que quiere modificar:");
+	mostrarMenu(aux3);
 	vector<int> turnos = turno.getId_Turno(cliente.getId_Cliente()); // Id_Turnos del Cliente
 	cout << "Ingrese la opcion que se requiera: " << endl;
 	bool encontrado = false;
 	do {
-		string entrada; // Pedir al usuario que ingrese un Id_Turno
-		getline(cin, entrada); // Usar getline para capturar la entrada completa
-		try {
-			id = stoi(entrada); // Convertir la entrada a número entero
-			
-			if (find(turnos.begin(), turnos.end(), id) == turnos.end()) { // Verificar si el Id_Turno está en la lista de turnos
-				cout << "Opcion no valida. Intente nuevamente." << endl;
-			} else {
-				encontrado = true; // Si el Id_Turno es válido, salir del bucle
-			}
-		} catch (const invalid_argument&) {
-			cout << "Error: debe ingresar un numero valido. Intente nuevamente." << endl; // Mensaje de error si la conversión falla
-		} catch (const out_of_range&) {
-			cout << "Error: el numero ingresado esta fuera del rango permitido. Intente nuevamente." << endl; // Manejo si el número es muy grande
+		id = validarOpcion(1, turnos.back());
+		if (find(turnos.begin(), turnos.end(), id) == turnos.end()) { // Verificar si el Id_Turno está en la lista de turnos
+			cout << "Opcion no valida. Intente nuevamente." << endl;
+		}
+		else {
+			encontrado = true; // Si el Id_Turno es válido, salir del bucle
 		}
 	} while (!encontrado); // Repetir hasta que se encuentre una opción válida
+	int doctor = turno.getId_Doctor(id);
+	string fecha = turno.getFecha(id);
+	string hora = turno.getHora(id);
 	do {
 		mostrarMenu({ "1. Cambiar doctor", "2. Cambiar fecha", "3. Cambiar hora", "4. Aplicar cambios", "5. Cancelar"});
 		cout << "Ingrese la opcion que se requiera (1-5)" << endl;
 		opcion = validarOpcion(1, 5);
-		int doctor = turno.getId_Doctor();
-		string fecha = turno.getFecha();
-		string hora = turno.getHora();
 		switch (opcion) {
 		case 1: // Cambiar doctor
 			mostrarMenu(mostrarDoctores(con));

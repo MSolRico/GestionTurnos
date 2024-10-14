@@ -61,8 +61,7 @@ int Cliente::getId_Cliente() const {
             int id = atoi(fila[0]);  // Convertir el valor de id_Cliente a entero
             mysql_free_result(resultado);
             return id;
-        }
-        else {
+        } else {
             cerr << "No se encontró un cliente con el DNI: " << dni << endl;
             mysql_free_result(resultado);
             return -1;
@@ -212,21 +211,8 @@ vector<string> Cliente::mostrarCliente(const string& dni) {
 }
 
 void Cliente::actualizarCliente(int id_Cliente) {
-    vector<string> datos = mostrarCliente(dni);
-
-    if (datos.empty()) {
-        cerr << "Cliente no encontrado. No se puede modificar." << endl;
-        return;
-    }
-
-    // Mostrar los datos del cliente y el menú para elegir qué campo modificar
-    cout << "\nElige el numero del campo que deseas modificar:\n";
-    for (size_t i = 0; i < datos.size(); i++) {
-        cout << i + 1 << ". " << datos[i] << endl;
-    }
-
     int opcion;
-    cout << "\nIngrese la opcion que se requiera (1-7)" << endl;
+    cout << "Ingrese la opcion que se requiera (1-7)" << endl;
     opcion = validarOpcion(1, 7);
     string nuevoValor;
 

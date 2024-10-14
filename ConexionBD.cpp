@@ -17,7 +17,7 @@ void ConexionBD::abrir_conexion() {
 
     conector = mysql_real_connect(conector, "localhost", "root", "", "", 3306, nullptr, 0);
     if (!conector) {
-        cerr << "Error al conectar a MySQL: " << mysql_error(conector) << endl;
+        cerr << "Error al conectar a MySQL: acceda al Panel de Control de XAMPP" << mysql_error(conector) << endl;
         return;
     }
 

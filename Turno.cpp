@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <map>
 
 using namespace std;
 
@@ -77,10 +78,84 @@ vector<int> Turno::getId_Turno(int id_Cliente) {
     return idTurnos; // Devuelve el vector con los ID de turnos
 }
 
-string Turno::getFecha() const { return fecha; }
-string Turno::getHora() const { return hora; }
+string Turno::getFecha(int id) const { 
+    string consultaStr = "SELECT fecha FROM turno WHERE id_Turno = " + to_string(id);
+    const char* consulta = consultaStr.c_str();
+
+    if (mysql_query(conexion->getConector(), consulta)) {
+        cerr << "Error al buscar el id_Turno: " << mysql_error(conexion->getConector()) << endl;
+        return "";  // Retorna una cadena vacía en caso de error
+    }
+
+    MYSQL_RES* resultado = mysql_store_result(conexion->getConector());
+    if (!resultado) {
+        cerr << "Error al obtener el resultado: " << mysql_error(conexion->getConector()) << endl;
+        return "";
+    }
+
+    MYSQL_ROW fila = mysql_fetch_row(resultado);
+    string fecha = "";
+    if (fila) {
+        fecha = fila[0] ? fila[0] : "";  // Asegurarse de que fila[0] no sea nulo
+    }
+    else {
+        cerr << "No se encontro una fecha con el id_Turno: " << id << endl;
+    }
+
+    mysql_free_result(resultado);
+    return fecha;
+    
+}
+
+string Turno::getHora(int id) const {
+    string consultaStr = "SELECT hora FROM turno WHERE id_Turno = " + to_string(id);
+    const char* consulta = consultaStr.c_str();
+
+    if (mysql_query(conexion->getConector(), consulta)) {
+        cerr << "Error al buscar el id_Turno: " << mysql_error(conexion->getConector()) << endl;
+        return "";  // Retorna una cadena vacía en caso de error
+    }
+
+    MYSQL_RES* resultado = mysql_store_result(conexion->getConector());
+    if (!resultado) {
+        cerr << "Error al obtener el resultado: " << mysql_error(conexion->getConector()) << endl;
+        return "";
+    }
+
+    MYSQL_ROW fila = mysql_fetch_row(resultado);
+    string hora = "";  
+    if (fila) {
+        hora = fila[0] ? fila[0] : "";  // Asegurarse de que fila[0] no sea nulo
+    } else {
+        cerr << "No se encontró una hora con el id_Turno: " << id << endl;
+    }
+
+    mysql_free_result(resultado);
+    return hora;
+}
+
 int Turno::getId_Cliente() const { return id_Cliente; }
-int Turno::getId_Doctor() const { return id_Doctor; }
+
+int Turno::getId_Doctor(int id) const {
+    string consulta = "SELECT id_Doctor FROM turno WHERE id_Turno = " + to_string(id);
+    conexion->ejecutarConsulta(consulta);
+    MYSQL_RES* resultado = mysql_store_result(conexion->getConector());
+    if (!resultado) {
+        cerr << "Error al obtener el resultado: " << mysql_error(conexion->getConector()) << endl;
+        return -1;
+    }
+    MYSQL_ROW fila = mysql_fetch_row(resultado);
+    if (fila) {
+        int id = atoi(fila[0]);  // Convertir el valor de id_Doctor a entero
+        mysql_free_result(resultado);
+        return id;
+    } else {
+        cerr << "No se encontró un id_Doctor con el id_Turno: " << id << endl;
+        mysql_free_result(resultado);
+        return -1;
+    }
+}
+
 string Turno::getCreated_at() const { return created_at; }
 string Turno::getUpdated_at() const { return updated_at; }
 
@@ -242,7 +317,7 @@ void Turno::actualizarTurno(const vector<string>& campos, const vector<string>& 
         return;
     }
 
-    string consulta = "UPDATE turnos SET ";
+    string consulta = "UPDATE turno SET ";
 
     for (size_t i = 0; i < campos.size(); ++i) {
         consulta += campos[i] + " = '" + nuevosValores[i] + "'";
@@ -252,7 +327,7 @@ void Turno::actualizarTurno(const vector<string>& campos, const vector<string>& 
         }
     }
 
-    consulta += " WHERE id = " + to_string(id) + ";";
+    consulta += " WHERE id_Turno = " + to_string(id) + ";";
 
     if (mysql_query(conexion->getConector(), consulta.c_str())) {
         cout << "Turno actualizado correctamente." << endl;
