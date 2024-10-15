@@ -144,7 +144,7 @@ void Menu::iniciar() {
 			} while (iniciado && continuar); // Mientras no se cierre sesión ni se haya eliminado la cuenta
 			break;
 		case 4: // Cerrar el programa
-			cout << "Saliendo del programa..." << endl;
+			cout << "\nSaliendo del programa..." << endl;
 			break;
 		}
 	} while (opcion != 4);
@@ -291,7 +291,7 @@ void Menu::solicitarTurno() {
 	} while (!turno.setFecha(fecha));
 
 	do {
-		mostrarMenu({ "Ingrese la hora (HH-MM): " });
+		mostrarMenu({ "Ingrese la hora (HH:MM): " });
 		std::getline(cin, hora);
 	} while (!turno.setHora(hora));
 
@@ -360,7 +360,7 @@ void Menu::modificarTurno() {
 			break;
 		case 3: // Cambiar hora
 			do {
-				mostrarMenu({ "Ingrese la hora (HH-MM): " });
+				mostrarMenu({ "Ingrese la hora (HH:MM): " });
 				std::getline(cin, hora);
 			} while (!turno.setHora(hora));
 			break;

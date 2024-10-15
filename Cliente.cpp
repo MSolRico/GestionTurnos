@@ -62,7 +62,7 @@ int Cliente::getId_Cliente() const {
             mysql_free_result(resultado);
             return id;
         } else {
-            cerr << "No se encontró un cliente con el DNI: " << dni << endl;
+            cerr << "No se encontro un cliente con el DNI: " << dni << endl;
             mysql_free_result(resultado);
             return -1;
         }
@@ -203,7 +203,7 @@ vector<string> Cliente::mostrarCliente(const string& dni) {
         datosCliente.push_back("Telefono: " + string(fila[6] ? fila[6] : ""));
     }
     else {
-        cerr << "No se encontró el cliente con DNI: " << dni << endl;
+        cerr << "No se encontro el cliente con DNI: " << dni << endl;
     }
 
     mysql_free_result(resultado);
@@ -276,7 +276,7 @@ void Cliente::actualizarCliente(int id_Cliente) {
 void Cliente::eliminarCliente(const string& dni) {
     // Confirmar antes de eliminar
     char confirmacion;
-    cout << "¿Estas seguro de que deseas eliminar al cliente con DNI: " << dni << "? (s/n): ";
+    cout << "¿Estas seguro de que deseas eliminar la cuenta con DNI: " << dni << "? (s/n): ";
     cin >> confirmacion;
 
     if (confirmacion != 's' && confirmacion != 'S') {
