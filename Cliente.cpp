@@ -273,25 +273,33 @@ void Cliente::actualizarCliente(int id_Cliente) {
     }
 }
 
-void Cliente::eliminarCliente(const string& dni) {
+bool Cliente::eliminarCliente(const string& dni) {
     // Confirmar antes de eliminar
-    char confirmacion;
-    cout << "¿Estas seguro de que deseas eliminar la cuenta con DNI: " << dni << "? (s/n): ";
-    cin >> confirmacion;
+    string confirmacion;
+    
+    do {
+        cout << "¿Estas seguro de que deseas eliminar la cuenta con DNI: " << dni << "? (s/n): ";
+        getline(cin, confirmacion);
+        
+        if (confirmacion != "s" && confirmacion != "S" && confirmacion != "n" && confirmacion != "N") {
+            cout << "Entrada invalida. Por favor, ingrese 's' o 'n'." << endl;
+        }
+    } while (confirmacion != "s" && confirmacion != "S" && confirmacion != "n" && confirmacion != "N");
 
-    if (confirmacion != 's' && confirmacion != 'S') {
+    if (confirmacion == "n" || confirmacion == "N") {    // Si el usuario cancela
         cout << "Eliminacion cancelada." << endl;
-        return;
+        return false;
     }
 
-    // Consulta SQL para eliminar el cliente
     string consulta = "DELETE FROM cliente WHERE dni = '" + dni + "'";
 
-    // Ejecutar la consulta
     if (mysql_query(conexion->getConector(), consulta.c_str())) {
         cerr << "Error al eliminar el cliente: " << mysql_error(conexion->getConector()) << endl;
+        return false;
     }
     else {
         cout << "Cliente eliminado correctamente." << endl;
+        return true;
     }
 }
+

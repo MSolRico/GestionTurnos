@@ -60,5 +60,5 @@ public:
     int buscarCliente();
     vector<string> mostrarCliente(const string& dni);
     void actualizarCliente(int id_Cliente);
-    void eliminarCliente(const string& dni);
+    bool eliminarCliente(const string& dni);
 };

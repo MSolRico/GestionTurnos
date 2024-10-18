@@ -67,8 +67,9 @@ void Menu::iniciar() {
 							cliente.actualizarCliente(cliente.getId_Cliente());
 							break;
 						case 2: // Eliminar
-							cliente.eliminarCliente(cliente.getDni());
-							continuar = false;
+							if (cliente.eliminarCliente(cliente.getDni())) {
+								continuar = false;  // La cuenta fue eliminada, salir al menú principal
+							}
 							break;
 						}
 					} while (opcion == 1 && continuar);
@@ -118,17 +119,15 @@ void Menu::iniciar() {
 										vector<int> turnos = turno.getId_Turno(cliente.getId_Cliente()); 
 										cout << "Ingrese la opcion que se requiera: " << endl;
 										bool encontrado = false;
-										do {
+										do { // Verificar si el Id_Turno está en la lista de turnos
 											opcion = validarOpcion(1, turnos.back());
-											if (find(turnos.begin(), turnos.end(), opcion) == turnos.end()) { // Verificar si el Id_Turno está en la lista de turnos
+											if (find(turnos.begin(), turnos.end(), opcion) == turnos.end()) { 
 												cout << "Opcion no valida. Intente nuevamente." << endl;
-											}
-											else {
+											} else {
 												encontrado = true; // Si el Id_Turno es válido, salir del bucle
 											}
-
 										} while (!encontrado); // Repetir hasta que se encuentre una opción válida
-										turno.eliminarTurno(opcion); // Eliminar turno
+										turno.eliminarTurno(opcion);
 										break;
 									}
 								} while (opcion != 3);

@@ -338,11 +338,20 @@ void Turno::actualizarTurno(const vector<string>& campos, const vector<string>& 
 
 void Turno::eliminarTurno(int id_Turno) {
     // Confirmar antes de eliminar
-    char confirmacion;
-    cout << "¿Estas seguro de que deseas eliminar el turno? (s/n): ";
-    cin >> confirmacion;
+    string confirmacion;
 
-    if (confirmacion != 's' && confirmacion != 'S') {
+    do {
+        cout << "¿Estas seguro de que deseas eliminar el turno? (s/n): ";
+        getline(cin, confirmacion);
+
+        // Validar si la entrada es correcta
+        if (confirmacion != "s" && confirmacion != "S" && confirmacion != "n" && confirmacion != "N") {
+            cout << "Entrada invalida. Por favor, ingrese 's' o 'n'." << endl;
+        }
+    } while (confirmacion != "s" && confirmacion != "S" && confirmacion != "n" && confirmacion != "N");
+
+    // Si el usuario cancela
+    if (confirmacion == "n" || confirmacion == "N") {
         cout << "Eliminacion cancelada." << endl;
         return;
     }
@@ -351,9 +360,7 @@ void Turno::eliminarTurno(int id_Turno) {
     
     if (mysql_query(conexion->getConector(), consulta.c_str())) { // Ejecutar la consulta
         cerr << "Error al eliminar el turno: " << mysql_error(conexion->getConector()) << endl;
-    }
-    else {
+    } else {
         cout << "Turno eliminado correctamente." << endl;
     }
-
 }
