@@ -263,7 +263,6 @@ void Cliente::actualizarCliente(int id_Cliente) {
 
     // Actualizar el campo seleccionado y la fecha de actualización (updated_at)
     string consulta = "UPDATE cliente SET " + campo + " = '" + nuevoValor + "', updated_at = NOW() WHERE id_Cliente = " + to_string(id_Cliente);
-    cout << nuevoValor;
 
     if (mysql_query(conexion->getConector(), consulta.c_str())) {
         cerr << "Error al actualizar el cliente: " << mysql_error(conexion->getConector()) << endl;

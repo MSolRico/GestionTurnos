@@ -197,6 +197,20 @@ bool Turno::validarFecha(const string& fecha) {
         if (mes == (1 + ahora.tm_mon) && dia <= ahora.tm_mday) return false;  // Día igual o anterior al actual
     }
 
+    // Verificación del día de la semana
+    tm fechaTm = {};
+    fechaTm.tm_year = anio - 1900;  // Año desde 1900
+    fechaTm.tm_mon = mes - 1;       // Mes desde 0 (enero es 0)
+    fechaTm.tm_mday = dia;
+
+    // Convierte la fecha en una estructura de tiempo
+    mktime(&fechaTm);
+
+    // Verifica si es domingo (tm_wday: 0 es domingo, 6 es sábado)
+    if (fechaTm.tm_wday == 0) {
+        return false;
+    }
+
     return true;  // La fecha es válida y posterior a la actual
 }
 

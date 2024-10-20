@@ -7,26 +7,24 @@
 #include <iostream>
 
 int main() {
-    cout << "Creando la conexion a la base de datos:" << endl;
-    ConexionBD conexion;
-    conexion.abrir_conexion();
+	cout << "Creando la conexion a la base de datos:" << endl;
+	ConexionBD conexion;
+	conexion.abrir_conexion();
 
-    cout << "\nCreando e inicializando migraciones:" << endl;
-    Migracion migraciones(&conexion);
-    migraciones.ejecutar_migraciones();
+	cout << "\nCreando e inicializando migraciones:" << endl;
+	Migracion migraciones(&conexion);
+	migraciones.ejecutar_migraciones();
 
-    cout << "\nCreando doctores en la base de datos:" << endl;
-    insertarDoctoresPorDefecto(&conexion);
+	cout << "\nCreando doctores en la base de datos:" << endl;
+	insertarDoctoresPorDefecto(&conexion);
+	cout << "\n";
 
-    cout << "\nPresione Enter para abrir la aplicacion...";
-    cin.get(); // Espera a que el usuario presione Enter
+	//      MENÚ
+	Menu app(52, 40, &conexion);
+	app.iniciar();
 
-    //      MENÚ
-    Menu app(52, 40, &conexion);
-    app.iniciar();
+	// Cerrar la conexión
+	conexion.cerrar_conexion();
 
-    // Cerrar la conexión
-    conexion.cerrar_conexion();
-
-    return 0;
+	return 0;
 }

@@ -188,6 +188,8 @@ vector<string> Menu::crearMenu(const vector<string>& opciones) const {
 
 // Muestra un submenú con las opciones dadas
 void Menu::mostrarMenu(const vector<string>& opciones) {
+	cout << "Presione Enter para continuar";
+	cin.get(); // Espera a que el usuario presione Enter
 	system("cls");
 	vector<string> menu = crearMenu(opciones);
 	dibujarRectangulo(menu);
@@ -227,7 +229,7 @@ bool Menu::iniciarSesion() {
 	string dni;
 		mostrarMenu({ "Ingrese su DNI","", "1. Atras" });
 		cout << "Ingrese su DNI o la opcion 1 para regresar: " << endl;
-		cin >> dni;
+		getline(cin, dni);
 		if (dni == "1") {
 			return false; // El usuario eligió regresar
 		}
@@ -245,7 +247,6 @@ bool Menu::iniciarSesion() {
 
 void Menu::registrarCliente() {
 	string nombre, apellido, obraSocial, fechaNac, direccion, telefono, created_at, updated_at;
-	cin.ignore();
 
 	mostrarMenu({ "Ingrese su nombre: " });
 	std::getline(cin, nombre);
@@ -285,12 +286,14 @@ void Menu::solicitarTurno() {
 
 	string fecha, hora;
 	do {
-		mostrarMenu({ "Ingrese la fecha (YYYY-MM-DD): " });
+		mostrarMenu({ "Horario de atencion: ", "Lunes a Viernes de 08:00 a 18:00",
+						  "Sabados de 10:00 a 16:00","","Ingrese la fecha (YYYY-MM-DD): "});
 		std::getline(cin, fecha);
 	} while (!turno.setFecha(fecha));
 
 	do {
-		mostrarMenu({ "Ingrese la hora (HH:MM): " });
+		mostrarMenu({ "Horario de atencion: ", "Lunes a Viernes de 08:00 a 18:00",
+						  "Sabados de 10:00 a 16:00","","Ingrese la hora (HH:MM): "});
 		std::getline(cin, hora);
 	} while (!turno.setHora(hora));
 
@@ -353,13 +356,15 @@ void Menu::modificarTurno() {
 			break;
 		case 2: // Cambiar fecha
 			do {
-				mostrarMenu({ "Ingrese la fecha (YYYY-MM-DD): " });
+				mostrarMenu({ "Horario de atencion: ", "Lunes a Viernes de 08:00 a 18:00",
+						  "Sabados de 10:00 a 16:00","","Ingrese la fecha (YYYY-MM-DD): "});
 				std::getline(cin, fecha);
 			} while (!turno.setFecha(fecha));
 			break;
 		case 3: // Cambiar hora
 			do {
-				mostrarMenu({ "Ingrese la hora (HH:MM): " });
+				mostrarMenu({ "Horario de atencion: ", "Lunes a Viernes de 08:00 a 18:00",
+						  "Sabados de 10:00 a 16:00","","Ingrese la hora (HH:MM): "});
 				std::getline(cin, hora);
 			} while (!turno.setHora(hora));
 			break;
