@@ -25,6 +25,7 @@ private:
     void mostrarMenu(const vector<string>& opciones);             // Muestra un menú
     int validarOpcion(int min, int max);                          // Valida la opción seleccionada
     bool iniciarSesion();                                         // Inicia sesión del cliente
+    void validarTexto(string& cadena);                            // Valida que sea un texto
     void registrarCliente();                                      // Registra un nuevo cliente
     void solicitarTurno();                                        // Solicita un nuevo turno
     void modificarCliente();                                      // Modificar cliente existente

@@ -5,6 +5,7 @@
 #include <vector>
 #include <limits>
 #include <cstdlib>
+#include
 
 using namespace std;
 
@@ -245,19 +246,43 @@ bool Menu::iniciarSesion() {
 		}
 }
 
+void Menu::validarTexto(string& cadena) {
+	do {
+		cout << "Ingresa solo letras: ";
+		getline(cin, cadena);
+
+		bool esValido = true;
+		for (char c : cadena) {
+			if (!isalpha(c) && !isspace(c)) {
+				cout << "Error: Solo se permiten letras. Intentalo nuevamente." << endl;
+				esValido = false;
+				break;
+			}
+		}
+
+		if (esValido) {
+			break; // Salimos del bucle si la cadena es válida
+		}
+
+	} while (true);
+}
+
 void Menu::registrarCliente() {
 	string nombre, apellido, obraSocial, fechaNac, direccion, telefono, created_at, updated_at;
 
 	mostrarMenu({ "Ingrese su nombre: " });
-	std::getline(cin, nombre);
-	cliente.setNombre(nombre);
+		std::getline(cin, nombre);
+		validarTexto(nombre);
+		cliente.setNombre(nombre);
 
 	mostrarMenu({ "Ingrese su apellido: " });
 	std::getline(cin, apellido);
+	validarTexto(apellido);
 	cliente.setApellido(apellido);
 
 	mostrarMenu({ "Ingrese su obra social: " });
 	std::getline(cin, obraSocial);
+	validarTexto(obraSocial);
 	cliente.setObraSocial(obraSocial);
 
 	do {
