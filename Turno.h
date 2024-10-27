@@ -24,7 +24,7 @@ public:
     // Métodos set (modificar)
     void setId_Turno(int e);
     bool setFecha(const string& f);
-    bool setHora(const string& h);
+    bool setHora(const string& h, string& fe);
     void setId_Cliente(int id);
     void setId_Doctor(int id);
     void setCreated_at(const string& c);
@@ -38,10 +38,6 @@ public:
     int getId_Doctor(int id) const;
     string getCreated_at() const;
     string getUpdated_at() const;
-
-    // Validar fecha y hora
-    bool validarFecha(const string& fecha);
-    bool validarHora(const string& hora);
 
     // Métodos CRUD
     void crearTurno();

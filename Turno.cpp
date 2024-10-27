@@ -1,4 +1,5 @@
 #include "Turno.h"
+#include "Verificacion.h"
 #include <regex>
 #include <ctime>
 #include <string>
@@ -22,7 +23,7 @@ Turno::Turno(ConexionBD* con, int id_t, const string& f, const string& h,
 void Turno::setId_Turno(int e) { id_Turno = e; }
 
 bool Turno::setFecha(const string& f) {
-    if (validarFecha(f)) {
+    if (validarFechaTurno(f)) {
         fecha = f;
         return true;
     } else {
@@ -31,8 +32,8 @@ bool Turno::setFecha(const string& f) {
     }
 }
 
-bool Turno::setHora(const string& h) {
-    if (validarHora(h)) {
+bool Turno::setHora(const string& h, string& fe) {
+    if (validarHora(h, fe)) {
         hora = h;
         return true;
     } else {
@@ -46,7 +47,7 @@ void Turno::setId_Doctor(int id) { id_Doctor = id; }
 void Turno::setCreated_at(const string& c) { created_at = c; }
 void Turno::setUpdated_at(const string& u) { updated_at = u; }
 
-    //Metodos getter
+// ----------------------------Metodos getter-------------------------------------------------------
 vector<int> Turno::getId_Turno(int id_Cliente) {
     vector<int> idTurnos;
 
@@ -159,95 +160,7 @@ int Turno::getId_Doctor(int id) const {
 string Turno::getCreated_at() const { return created_at; }
 string Turno::getUpdated_at() const { return updated_at; }
 
-    //Validar Fecha y hora
-bool Turno::validarFecha(const string& fecha) {
-    // Validación de formato usando regex (formato: YYYY-MM-DD)
-    regex formatoFecha(R"(\d{4}-\d{2}-\d{2})");
-    if (!regex_match(fecha, formatoFecha)) {
-        return false;
-    }
-
-    // Extrae el año, mes y día de la fecha ingresada
-    int anio = stoi(fecha.substr(0, 4));
-    int mes = stoi(fecha.substr(5, 2));
-    int dia = stoi(fecha.substr(8, 2));
-
-    // Verifica que el mes sea válido
-    if (mes < 1 || mes > 12) return false;
-
-    // Verifica los días válidos para cada mes
-    if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) return false;
-    if (mes == 2) {
-        bool esBisiesto = (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
-        if (dia > 29 || (dia == 29 && !esBisiesto)) return false;
-    }
-    else if (dia > 31) {
-        return false;
-    }
-
-    // Obtener la fecha actual del sistema
-    time_t t = time(0);   // tiempo actual
-    tm ahora;
-    localtime_s(&ahora, &t);
-
-    // Comparar la fecha ingresada con la fecha actual
-    if (anio < (1900 + ahora.tm_year)) return false;  // Año anterior al actual
-    if (anio == (1900 + ahora.tm_year)) {
-        if (mes < (1 + ahora.tm_mon)) return false;   // Mes anterior al actual
-        if (mes == (1 + ahora.tm_mon) && dia <= ahora.tm_mday) return false;  // Día igual o anterior al actual
-    }
-
-    // Verificación del día de la semana
-    tm fechaTm = {};
-    fechaTm.tm_year = anio - 1900;  // Año desde 1900
-    fechaTm.tm_mon = mes - 1;       // Mes desde 0 (enero es 0)
-    fechaTm.tm_mday = dia;
-
-    // Convierte la fecha en una estructura de tiempo
-    mktime(&fechaTm);
-
-    // Verifica si es domingo (tm_wday: 0 es domingo, 6 es sábado)
-    if (fechaTm.tm_wday == 0) {
-        return false;
-    }
-
-    return true;  // La fecha es válida y posterior a la actual
-}
-
-bool Turno::validarHora(const std::string& hora) {
-    // Validación de formato usando regex
-    regex formatoHora(R"(\d{2}:\d{2})");
-    if (!regex_match(hora, formatoHora)) {
-        return false;
-    }
-
-    // Extrae la hora y los minutos
-    int h = stoi(hora.substr(0, 2));
-    int m = stoi(hora.substr(3, 2));
-
-    // Verifica que la hora y los minutos sean válidos
-    if (h < 0 || h > 23 || m < 0 || m > 59) return false;
-
-    // Verifica los días y horarios
-    tm tm = {};
-    istringstream ss(fecha);
-    ss >> get_time(&tm, "%Y-%m-%d");
-    mktime(&tm); // Normaliza el tiempo
-
-    // Días de la semana (0=domingo, 6=sábado)
-    int diaSemana = tm.tm_wday;
-
-    if ((diaSemana >= 1 && diaSemana <= 5 && (h < 8 || h > 18)) || // Lunes a Viernes
-        (diaSemana == 6 && (h < 10 || h > 16)) || // Sábados
-        (diaSemana == 0)) { // Domingos
-        return false;
-    }
-
-    return true;
-}
-
-
-    //Metodos CRUD
+// ----------------------------------Metodos CRUD-------------------------------------------------
 void Turno::crearTurno() {
     string consulta = "INSERT INTO turno (fecha, hora, id_Cliente, id_Doctor, created_at, updated_at) VALUES ('" +
         fecha + "', '" + hora + "', " + to_string(id_Cliente) + ", " + to_string(id_Doctor) + ", NOW(), NOW())";
@@ -345,9 +258,8 @@ void Turno::actualizarTurno(const vector<string>& campos, const vector<string>& 
 
     if (mysql_query(conexion->getConector(), consulta.c_str())) {
         cout << "Turno actualizado correctamente." << endl;
-    } else {
-        cerr << "Error al actualizar el turno en la base de datos." << endl;
     }
+
 }
 
 void Turno::eliminarTurno(int id_Turno) {

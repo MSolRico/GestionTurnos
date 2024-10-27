@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <regex>
 #include "Cliente.h"
 #include "Turno.h"
 #include "Doctor.h"
@@ -23,9 +22,7 @@ private:
     void dibujarRectangulo(const vector<string>& lineas) const;   // Dibuja un rectángulo en la consola
     vector<string> crearMenu(const vector<string>& opciones) const; // Crea el diseño de un menú
     void mostrarMenu(const vector<string>& opciones);             // Muestra un menú
-    int validarOpcion(int min, int max);                          // Valida la opción seleccionada
     bool iniciarSesion();                                         // Inicia sesión del cliente
-    void validarTexto(string& cadena);                            // Valida que sea un texto
     void registrarCliente();                                      // Registra un nuevo cliente
     void solicitarTurno();                                        // Solicita un nuevo turno
     void modificarCliente();                                      // Modificar cliente existente

@@ -50,17 +50,10 @@ public:
     string getCreated_at() const;
     string getUpdated_at() const;
 
-    // Validación de la fecha
-    bool validarFecha(const string& fecha);
-    // Validar opcion
-    int validarOpcion(int min, int max);
-
     // Métodos CRUD
     void crearCliente();
     int buscarCliente();
     vector<string> mostrarCliente(const string& dni);
-    void validarTexto(string& cadena);
-    bool validarNumero(const string& cadena);
     void actualizarCliente(int id_Cliente);
     bool eliminarCliente(const string& dni);
 };

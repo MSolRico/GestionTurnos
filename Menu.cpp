@@ -1,11 +1,11 @@
 #include "Doctor.h"
 #include "Menu.h"
+#include "Verificacion.h"
 #include <iostream>
 #include <string>
 #include <vector>
 #include <limits>
 #include <cstdlib>
-#include
 
 using namespace std;
 
@@ -70,6 +70,7 @@ void Menu::iniciar() {
 						case 2: // Eliminar
 							if (cliente.eliminarCliente(cliente.getDni())) {
 								continuar = false;  // La cuenta fue eliminada, salir al menú principal
+								iniciado = false;   // La cuenta fue eliminada, por lo que no está iniciada la sesión
 							}
 							break;
 						}
@@ -117,14 +118,15 @@ void Menu::iniciar() {
 										aux.push_back(""); // Nuevo elemento se coloca después del último elemento
 										aux.push_back("Ingrese el numero del turno a eliminar");
 										mostrarMenu(aux);
-										vector<int> turnos = turno.getId_Turno(cliente.getId_Cliente()); 
+										vector<int> turnos = turno.getId_Turno(cliente.getId_Cliente());
 										cout << "Ingrese la opcion que se requiera: " << endl;
 										bool encontrado = false;
 										do { // Verificar si el Id_Turno está en la lista de turnos
 											opcion = validarOpcion(1, turnos.back());
-											if (find(turnos.begin(), turnos.end(), opcion) == turnos.end()) { 
+											if (find(turnos.begin(), turnos.end(), opcion) == turnos.end()) {
 												cout << "Opcion no valida. Intente nuevamente." << endl;
-											} else {
+											}
+											else {
 												encontrado = true; // Si el Id_Turno es válido, salir del bucle
 											}
 										} while (!encontrado); // Repetir hasta que se encuentre una opción válida
@@ -196,92 +198,43 @@ void Menu::mostrarMenu(const vector<string>& opciones) {
 	dibujarRectangulo(menu);
 }
 
-// Valida la opción seleccionada dentro de un rango permitido
-int Menu::validarOpcion(int min, int max) {
-	int opcion;
-	string entrada;
-	while (true) {
-		getline(cin, entrada); // Lee la entrada como string
-		// Verificar si la entrada es válida (no vacía)
-		if (entrada.empty()) {
-			cout << "Entrada vacia. Intente nuevamente." << endl;
-			continue; // Volver al inicio del bucle
-		}
-		try {
-			opcion = stoi(entrada); // Usar stoi para convertir string a int
-			if (opcion < min || opcion > max) { // Verificar si la opción está dentro del rango permitido
-				cout << "Opcion incorrecta. Intente nuevamente." << endl;
-			}
-			else {
-				return opcion; // Devuelve la opción válida
-			}
-		}
-		catch (const invalid_argument& e) {
-			cout << "Error: debe ingresar un numero valido." << endl; // Manejo de excepción si no se puede convertir
-		}
-		catch (const out_of_range& e) {
-			cout << "Error: el numero ingresado esta fuera del rango permitido." << endl; // Manejo si el número es muy grande
-		}
-	}
-}
-
 // Inicia sesión del cliente
 bool Menu::iniciarSesion() {
 	string dni;
-		mostrarMenu({ "Ingrese su DNI","", "1. Atras" });
-		cout << "Ingrese su DNI o la opcion 1 para regresar: " << endl;
+	mostrarMenu({ "Ingrese su DNI","", "1. Atras" });
+	cout << "Ingrese su DNI o la opcion 1 para regresar: " << endl;
+	getline(cin, dni);
+	while (!validarNumero(dni)) {
+		cout << "Error: Solo se permiten numeros. Intentalo nuevamente." << endl;
 		getline(cin, dni);
-		if (dni == "1") {
-			return false; // El usuario eligió regresar
-		}
+	}
+	if (dni == "1") {
+		return false; // El usuario eligió regresar
+	}
 
-		cliente.setDni(dni);
-		if (cliente.buscarCliente() > 0) {
-			cout << "El cliente con DNI " << dni << " ya esta registrado." << endl;
-			return true;
-		}
-		else {
-			registrarCliente();
-			return true;
-		}
-}
-
-void Menu::validarTexto(string& cadena) {
-	do {
-		cout << "Ingresa solo letras: ";
-		getline(cin, cadena);
-
-		bool esValido = true;
-		for (char c : cadena) {
-			if (!isalpha(c) && !isspace(c)) {
-				cout << "Error: Solo se permiten letras. Intentalo nuevamente." << endl;
-				esValido = false;
-				break;
-			}
-		}
-
-		if (esValido) {
-			break; // Salimos del bucle si la cadena es válida
-		}
-
-	} while (true);
+	cliente.setDni(dni);
+	if (cliente.buscarCliente() > 0) {
+		cout << "El cliente con DNI " << dni << " ya esta registrado." << endl;
+		return true;
+	}
+	else {
+		registrarCliente();
+		return true;
+	}
 }
 
 void Menu::registrarCliente() {
 	string nombre, apellido, obraSocial, fechaNac, direccion, telefono, created_at, updated_at;
 
 	mostrarMenu({ "Ingrese su nombre: " });
-		std::getline(cin, nombre);
-		validarTexto(nombre);
-		cliente.setNombre(nombre);
+	validarTexto(nombre);
+	cliente.setNombre(nombre);
 
 	mostrarMenu({ "Ingrese su apellido: " });
-	std::getline(cin, apellido);
 	validarTexto(apellido);
 	cliente.setApellido(apellido);
 
 	mostrarMenu({ "Ingrese su obra social: " });
-	std::getline(cin, obraSocial);
 	validarTexto(obraSocial);
 	cliente.setObraSocial(obraSocial);
 
@@ -292,10 +245,15 @@ void Menu::registrarCliente() {
 
 	mostrarMenu({ "Ingrese su direccion: " });
 	std::getline(cin, direccion);
+	textoVacio(direccion);
 	cliente.setDireccion(direccion);
 
 	mostrarMenu({ "Ingrese su telefono: " });
 	std::getline(cin, telefono);
+	while (!validarNumero(telefono)) {
+		cout << "Error: Solo se permiten numeros. Intentalo nuevamente." << endl;
+		getline(cin, telefono);
+	}
 	cliente.setTelefono(telefono);
 
 	cliente.crearCliente();
@@ -312,15 +270,15 @@ void Menu::solicitarTurno() {
 	string fecha, hora;
 	do {
 		mostrarMenu({ "Horario de atencion: ", "Lunes a Viernes de 08:00 a 18:00",
-						  "Sabados de 10:00 a 16:00","","Ingrese la fecha (YYYY-MM-DD): "});
+						  "Sabados de 10:00 a 16:00","","Ingrese la fecha (YYYY-MM-DD): " });
 		std::getline(cin, fecha);
 	} while (!turno.setFecha(fecha));
 
 	do {
 		mostrarMenu({ "Horario de atencion: ", "Lunes a Viernes de 08:00 a 18:00",
-						  "Sabados de 10:00 a 16:00","","Ingrese la hora (HH:MM): "});
+						  "Sabados de 10:00 a 16:00","","Ingrese la hora (HH:MM): " });
 		std::getline(cin, hora);
-	} while (!turno.setHora(hora));
+	} while (!turno.setHora(hora,fecha));
 
 	if (turno.existeTurno(opcion, fecha, hora)) {
 		cerr << "Error: El turno ya está reservado para este doctor, fecha y hora." << endl;
@@ -340,9 +298,9 @@ void Menu::modificarCliente() {
 	}
 
 	// Mostrar los datos del cliente y el menú para elegir qué campo modificar
-	aux4.push_back("Elige el numero del campo que deseas modificar :" );
+	aux4.push_back("Elige el numero del campo que deseas modificar :");
 	for (size_t i = 0; i < datos.size(); i++) {
-		aux4.push_back(to_string(i+1) + ". " + datos[i]);
+		aux4.push_back(to_string(i + 1) + ". " + datos[i]);
 	}
 	mostrarMenu(aux4);
 }
@@ -370,7 +328,7 @@ void Menu::modificarTurno() {
 	string fecha = turno.getFecha(id);
 	string hora = turno.getHora(id);
 	do {
-		mostrarMenu({ "1. Cambiar doctor", "2. Cambiar fecha", "3. Cambiar hora", "4. Aplicar cambios", "5. Cancelar"});
+		mostrarMenu({ "1. Cambiar doctor", "2. Cambiar fecha", "3. Cambiar hora", "4. Aplicar cambios", "5. Cancelar" });
 		cout << "Ingrese la opcion que se requiera (1-5)" << endl;
 		opcion = validarOpcion(1, 5);
 		switch (opcion) {
@@ -382,23 +340,23 @@ void Menu::modificarTurno() {
 		case 2: // Cambiar fecha
 			do {
 				mostrarMenu({ "Horario de atencion: ", "Lunes a Viernes de 08:00 a 18:00",
-						  "Sabados de 10:00 a 16:00","","Ingrese la fecha (YYYY-MM-DD): "});
+						  "Sabados de 10:00 a 16:00","","Ingrese la fecha (YYYY-MM-DD): " });
 				std::getline(cin, fecha);
 			} while (!turno.setFecha(fecha));
 			break;
 		case 3: // Cambiar hora
 			do {
 				mostrarMenu({ "Horario de atencion: ", "Lunes a Viernes de 08:00 a 18:00",
-						  "Sabados de 10:00 a 16:00","","Ingrese la hora (HH:MM): "});
+						  "Sabados de 10:00 a 16:00","","Ingrese la hora (HH:MM): " });
 				std::getline(cin, hora);
-			} while (!turno.setHora(hora));
+			} while (!turno.setHora(hora,fecha));
 			break;
 		case 4: // Aplicar cambios
 			// Verificamos si ya existe un turno con esa combinación de doctor, fecha y hora
 			if (!turno.existeTurno(doctor, fecha, hora)) {
 				turno.actualizarTurno({ "id_Doctor", "fecha", "hora" }, { to_string(doctor), fecha, hora }, id);
-				cout << "Turno modificado exitosamente." << endl;
-			} else {
+			}
+			else {
 				cout << "Ya existe un turno con ese doctor, fecha y hora." << endl;
 			}
 			break;

@@ -1,10 +1,11 @@
 #include "Cliente.h"
+#include "Verificacion.h"
 #include <iostream>
 #include <regex>
 
 using namespace std;
 
-// Constructores
+// -------------------------------Constructores-------------------------------------------------------
 Cliente::Cliente(ConexionBD* con) : conexion(con), id_Cliente(0), dni(""), nombre(""), apellido(""),
 obraSocial(""), fechaNac(""), direccion(""), telefono(""), created_at(""), updated_at("") {}
 
@@ -14,7 +15,7 @@ Cliente::Cliente(ConexionBD* con, int id_c, const string& dn, const string& nom,
     : conexion(con), id_Cliente(id_c), dni(dn), nombre(nom), apellido(ape), obraSocial(os),
     fechaNac(fecha), direccion(dire), telefono(tel), created_at(cre_at), updated_at(up_at) {}
 
-// Métodos setter
+// --------------------------------Métodos setter----------------------------------------------------
 void Cliente::setId_Cliente(int e) { id_Cliente = e; }
 void Cliente::setDni(const string& d) { dni = d; }
 void Cliente::setNombre(const string& n) { nombre = n; }
@@ -36,7 +37,7 @@ void Cliente::setTelefono(const string& t) { telefono = t; }
 void Cliente::setCreated_at(const string& c) { created_at = c; }
 void Cliente::setUpdated_at(const string& u) { updated_at = u; }
 
-// Métodos getter
+// ---------------------------Métodos getter---------------------------------------------------------
 
 int Cliente::getId_Cliente() const {
     if (!dni.empty()) {
@@ -82,64 +83,8 @@ string Cliente::getTelefono() const { return telefono; }
 string Cliente::getCreated_at() const { return created_at; }
 string Cliente::getUpdated_at() const { return updated_at; }
 
-// Validación de la fecha
-bool Cliente::validarFecha(const string& fecha) {
-    // Validación de formato usando regex
-    regex formatoFecha(R"(\d{4}-\d{2}-\d{2})");
-    if (!regex_match(fecha, formatoFecha)) {
-        return false;
-    }
+//--------------------------------Métodos CRUD-------------------------------------------------------
 
-    // Extrae el año, mes y día
-    int anio = stoi(fecha.substr(0, 4));
-    int mes = stoi(fecha.substr(5, 2));
-    int dia = stoi(fecha.substr(8, 2));
-
-    // Verifica que el mes sea válido
-    if (mes < 1 || mes > 12) return false;
-
-    // Verifica los días válidos para cada mes
-    if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) return false;
-    if (mes == 2) {
-        bool esBisiesto = (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
-        if (dia > 29 || (dia == 29 && !esBisiesto)) return false;
-    }
-    else if (dia > 31) {
-        return false;
-    }
-    return true;
-}
-
-// Valida la opción seleccionada dentro de un rango permitido
-int Cliente::validarOpcion(int min, int max) {
-    int opcion;
-    string entrada;
-    while (true) {
-        getline(cin, entrada); // Lee la entrada como string
-        // Verificar si la entrada es válida (no vacía)
-        if (entrada.empty()) {
-            cout << "Entrada vacia. Intente nuevamente." << endl;
-            continue; // Volver al inicio del bucle
-        }
-        try {
-            opcion = stoi(entrada); // Usar stoi para convertir string a int
-            if (opcion < min || opcion > max) { // Verificar si la opción está dentro del rango permitido
-                cout << "Opcion incorrecta. Intente nuevamente." << endl;
-            }
-            else {
-                return opcion; // Devuelve la opción válida
-            }
-        }
-        catch (const invalid_argument& e) {
-            cout << "Error: debe ingresar un numero valido." << endl; // Manejo de excepción si no se puede convertir
-        }
-        catch (const out_of_range& e) {
-            cout << "Error: el numero ingresado esta fuera del rango permitido." << endl; // Manejo si el número es muy grande
-        }
-    }
-}
-
-// Métodos CRUD
 void Cliente::crearCliente() {
     string consulta = "INSERT INTO cliente (dni, nombre, apellido, obraSocial, fechaNac, direccion, telefono, created_at, updated_at) VALUES ('" +
         dni + "', '" + nombre + "', '" + apellido + "', '" + obraSocial + "', '" + fechaNac + "', '" +
@@ -210,36 +155,9 @@ vector<string> Cliente::mostrarCliente(const string& dni) {
     return datosCliente;  // Retorna el vector con los datos del cliente
 }
 
-void Cliente::validarTexto(string& cadena) {
-    bool esValido = true;
-    do {
-        cout << "Ingresa solo letras: ";
-        getline(cin, cadena);
-
-       
-        for (char c : cadena) {
-            if (!isalpha(c) && !isspace(c)) {
-                cout << "Error: Solo se permiten letras. Intentalo nuevamente." << endl;
-                esValido = false;
-                break;
-            }
-        }
-
-    } while (!esValido);
-}
-
-bool Cliente::validarNumero(const string& cadena) {
-    for (char c : cadena) {
-        if (!isdigit(c)) {
-            return false; // Contiene un carácter que no es número
-        }
-    }
-    return true;
-}
-
 void Cliente::actualizarCliente(int id_Cliente) {
     int opcion;
-    cout << "Ingrese la opción que se requiere (1-7): ";
+    cout << "Ingrese la opcion que se requiere (1-7): ";
     opcion = validarOpcion(1, 7);
     string nuevoValor;
     string campo;
@@ -253,7 +171,7 @@ void Cliente::actualizarCliente(int id_Cliente) {
                 fechaValida = true;
             }
             else {
-                cout << "Formato de fecha incorrecto. Inténtalo de nuevo.\n";
+                cout << "Formato de fecha incorrecto. Intentalo de nuevo.\n";
             }
         } while (!fechaValida);
         campo = "fechaNac";
@@ -261,18 +179,22 @@ void Cliente::actualizarCliente(int id_Cliente) {
     else {
         // Pedir el nuevo valor para los otros campos
         cout << "Introduce el nuevo valor: ";
-        getline(cin, nuevoValor);
 
         // Validar según el tipo de campo
         if (opcion == 1 || opcion == 7) { // Validación numérica para DNI y teléfono
+            getline(cin, nuevoValor);
             while (!validarNumero(nuevoValor)) {
-                cout << "Error: Solo se permiten números. Inténtalo nuevamente." << endl;
+                cout << "Error: Solo se permiten numeros. Intentalo nuevamente." << endl;
                 getline(cin, nuevoValor);
             }
         }
-        else { // Validación de texto para otros campos
-            validarTexto(nuevoValor);
-        }
+        else if (opcion == 2 || opcion == 3 || opcion == 4) {
+            { // Validación de texto para otros campos
+                validarTexto(nuevoValor);
+            }
+        } else getline(cin, nuevoValor);
+
+        textoVacio(nuevoValor); // Verifica que la cadena no esté vacia
 
         // Asignar el campo correspondiente según la opción
         switch (opcion) {
