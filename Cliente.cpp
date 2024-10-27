@@ -210,13 +210,41 @@ vector<string> Cliente::mostrarCliente(const string& dni) {
     return datosCliente;  // Retorna el vector con los datos del cliente
 }
 
+void Cliente::validarTexto(string& cadena) {
+    bool esValido = true;
+    do {
+        cout << "Ingresa solo letras: ";
+        getline(cin, cadena);
+
+       
+        for (char c : cadena) {
+            if (!isalpha(c) && !isspace(c)) {
+                cout << "Error: Solo se permiten letras. Intentalo nuevamente." << endl;
+                esValido = false;
+                break;
+            }
+        }
+
+    } while (!esValido);
+}
+
+bool Cliente::validarNumero(const string& cadena) {
+    for (char c : cadena) {
+        if (!isdigit(c)) {
+            return false; // Contiene un carácter que no es número
+        }
+    }
+    return true;
+}
+
 void Cliente::actualizarCliente(int id_Cliente) {
     int opcion;
-    cout << "Ingrese la opcion que se requiera (1-7)" << endl;
+    cout << "Ingrese la opción que se requiere (1-7): ";
     opcion = validarOpcion(1, 7);
     string nuevoValor;
+    string campo;
 
-    if (opcion == 5) { // Si se selecciona la opción 5 (fecha de nacimiento), usar la función de validación
+    if (opcion == 5) { // Si se selecciona la opción 5 (fecha de nacimiento), validar el formato de fecha
         bool fechaValida = false;
         do {
             cout << "Introduce la nueva fecha de nacimiento (aaaa-mm-dd): ";
@@ -225,40 +253,37 @@ void Cliente::actualizarCliente(int id_Cliente) {
                 fechaValida = true;
             }
             else {
-                cout << "Formato de fecha incorrecto. Intentalo de nuevo.\n";
+                cout << "Formato de fecha incorrecto. Inténtalo de nuevo.\n";
             }
         } while (!fechaValida);
+        campo = "fechaNac";
     }
     else {
         // Pedir el nuevo valor para los otros campos
         cout << "Introduce el nuevo valor: ";
         getline(cin, nuevoValor);
-    }
 
-    // Definir el nombre del campo correspondiente a la opción seleccionada
-    string campo;
-    switch (opcion) {
-    case 1: campo = "dni"; 
-        setDni(nuevoValor);
-        break;
-    case 2: campo = "nombre"; 
-        setNombre(nuevoValor);
-        break;
-    case 3: campo = "apellido"; 
-        setApellido(nuevoValor);
-        break;
-    case 4: campo = "obraSocial"; 
-        setObraSocial(nuevoValor);
-        break;
-    case 5: campo = "fechaNac"; 
-        setFechaNac(nuevoValor);
-        break;
-    case 6: campo = "direccion"; 
-        setDireccion(nuevoValor);
-        break;
-    case 7: campo = "telefono"; 
-        setTelefono(nuevoValor);
-        break;
+        // Validar según el tipo de campo
+        if (opcion == 1 || opcion == 7) { // Validación numérica para DNI y teléfono
+            while (!validarNumero(nuevoValor)) {
+                cout << "Error: Solo se permiten números. Inténtalo nuevamente." << endl;
+                getline(cin, nuevoValor);
+            }
+        }
+        else { // Validación de texto para otros campos
+            validarTexto(nuevoValor);
+        }
+
+        // Asignar el campo correspondiente según la opción
+        switch (opcion) {
+        case 1: campo = "dni"; break;
+        case 2: campo = "nombre"; break;
+        case 3: campo = "apellido"; break;
+        case 4: campo = "obraSocial"; break;
+        case 6: campo = "direccion"; break;
+        case 7: campo = "telefono"; break;
+        default: break;
+        }
     }
 
     // Actualizar el campo seleccionado y la fecha de actualización (updated_at)

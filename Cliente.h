@@ -59,6 +59,8 @@ public:
     void crearCliente();
     int buscarCliente();
     vector<string> mostrarCliente(const string& dni);
+    void validarTexto(string& cadena);
+    bool validarNumero(const string& cadena);
     void actualizarCliente(int id_Cliente);
     bool eliminarCliente(const string& dni);
 };
