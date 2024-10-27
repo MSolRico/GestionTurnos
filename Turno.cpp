@@ -27,7 +27,7 @@ bool Turno::setFecha(const string& f) {
         fecha = f;
         return true;
     } else {
-        cerr << "Fecha invalida o anterior a la actual. Asegurate de ingresarla en formato YYYY-MM-DD." << endl;
+        cerr << "Fecha invalida o anterior a la actual. Solo se puede pedir turnos hasta con 3 años de antelacion.\nAsegurate de ingresarla en formato YYYY-MM-DD." << endl;
         return false;
     }
 }

@@ -53,11 +53,17 @@ bool validarFechaTurno(const string& fecha) {
     int mes = stoi(fecha.substr(5, 2));
     int dia = stoi(fecha.substr(8, 2));
 
-    // Comparar la fecha ingresada con la fecha actual
-    if (anio < (1900 + ahora.tm_year)) return false;  // Año anterior al actual
-    if (anio == (1900 + ahora.tm_year)) {
-        if (mes < (1 + ahora.tm_mon)) return false;   // Mes anterior al actual
-        if (mes == (1 + ahora.tm_mon) && dia <= ahora.tm_mday) return false;  // Día igual o anterior al actual
+    // Rango de años permitido (año actual y tres años en el futuro)
+    int anioActual = 1900 + ahora.tm_year;
+    int anioMaximo = anioActual + 3;
+
+    // Verificar que el año esté dentro del rango permitido
+    if (anio < anioActual || anio > anioMaximo) return false;
+
+    // Comparar el mes y el día si el año es el actual
+    if (anio == anioActual) {
+        if (mes < (1 + ahora.tm_mon)) return false; // Mes anterior al actual
+        if (mes == (1 + ahora.tm_mon) && dia < ahora.tm_mday) return false; // Día anterior al actual
     }
 
     // Verificación del día de la semana
@@ -74,7 +80,7 @@ bool validarFechaTurno(const string& fecha) {
         return false;
     }
 
-    return true;  // La fecha de turno es válida
+    return true;  // La fecha de turno es válida y dentro del rango de tres años
 }
 
 bool validarHora(const std::string& hora, std::string& fecha) {
