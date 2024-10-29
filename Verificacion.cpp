@@ -38,6 +38,34 @@ bool validarFecha(const string& fecha) {
     return true;  // La fecha es válida hasta este punto
 }
 
+bool validarFechaNacimiento(const std::string& fechaNacimiento) {
+    // Primero, valida que la fecha esté en el formato correcto y sea válida
+    if (!validarFecha(fechaNacimiento)) {
+        return false;
+    }
+
+    // Obtiene la fecha actual de forma segura
+    time_t now = time(0);
+    tm now_tm;
+    localtime_s(&now_tm, &now);
+
+    int anioActual = now_tm.tm_year + 1900;
+    int mesActual = now_tm.tm_mon + 1;
+    int diaActual = now_tm.tm_mday;
+
+    // Obtiene el año, mes y día de la fecha de nacimiento
+    int anioNacimiento = stoi(fechaNacimiento.substr(0, 4));
+    int mesNacimiento = stoi(fechaNacimiento.substr(5, 2));
+    int diaNacimiento = stoi(fechaNacimiento.substr(8, 2));
+
+    // Compara la fecha de nacimiento con la fecha actual
+    if (anioNacimiento > anioActual) return false;
+    if (anioNacimiento == anioActual && mesNacimiento > mesActual) return false;
+    if (anioNacimiento == anioActual && mesNacimiento == mesActual && diaNacimiento >= diaActual) return false;
+
+    return true;  // La fecha de nacimiento es válida y anterior a la actual
+}
+
 bool validarFechaTurno(const string& fecha) {
     if (!validarFecha(fecha)) {
         return false;  // Si la fecha no es válida, retornamos false

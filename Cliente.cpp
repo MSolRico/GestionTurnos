@@ -23,11 +23,11 @@ void Cliente::setApellido(const string& a) { apellido = a; }
 void Cliente::setObraSocial(const string& o) { obraSocial = o; }
 
 bool Cliente::setFechaNac(const string& f) {
-    if (validarFecha(f)) {
+    if (validarFechaNacimiento(f)) {
         fechaNac = f;
         return true;
     } else {
-        cerr << "Fecha de nacimiento invalida. Asegurate de ingresarla en formato YYYY-MM-DD." << endl;
+        cerr << "Fecha de nacimiento invalida. Asegurate de ingresarla en formato AAAA-MM-DD." << endl;
         return false;
     }
 }

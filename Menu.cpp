@@ -86,19 +86,19 @@ void Menu::iniciar() {
 							solicitarTurno();
 							break;
 						case 2: // Ver turnos
-							aux.clear();
-							aux = turno.leerTurnos(cliente.getId_Cliente()); // Mostrar turnos
-							if (aux.empty()) {
-								aux.push_back("No tienes ningun turno registrado");
-								aux.push_back("");
-								aux.push_back("1. Atras");
-								mostrarMenu(aux);
-								cout << "Ingrese la opcion 1 para regresar" << endl;
-								opcion = validarOpcion(1, 1);
-								break;
-							}
-							else {
-								do {
+							do {
+								aux.clear();
+								aux = turno.leerTurnos(cliente.getId_Cliente()); // Mostrar turnos
+								if (aux.empty()) {
+									aux.push_back("No tienes ningun turno registrado");
+									aux.push_back("");
+									aux.push_back("1. Atras");
+									mostrarMenu(aux);
+									cout << "Ingrese la opcion 1 para regresar" << endl;
+									opcion = validarOpcion(1, 1);
+									break; // Salir al menú anterior si no hay turnos;
+								}
+								else {
 									aux.clear();
 									aux = turno.leerTurnos(cliente.getId_Cliente());
 									aux.push_back(""); // Nuevo elemento se coloca después del último elemento
@@ -133,8 +133,8 @@ void Menu::iniciar() {
 										turno.eliminarTurno(opcion);
 										break;
 									}
-								} while (opcion != 3);
-							}
+								}
+							} while (opcion != 3);
 							break;
 						}
 					} while (opcion != 3);
@@ -278,7 +278,7 @@ void Menu::solicitarTurno() {
 		mostrarMenu({ "Horario de atencion: ", "Lunes a Viernes de 08:00 a 18:00",
 						  "Sabados de 10:00 a 16:00","","Ingrese la hora (HH:MM): " });
 		std::getline(cin, hora);
-	} while (!turno.setHora(hora,fecha));
+	} while (!turno.setHora(hora, fecha));
 
 	if (turno.existeTurno(opcion, fecha, hora)) {
 		cerr << "Error: El turno ya está reservado para este doctor, fecha y hora." << endl;
@@ -349,7 +349,7 @@ void Menu::modificarTurno() {
 				mostrarMenu({ "Horario de atencion: ", "Lunes a Viernes de 08:00 a 18:00",
 						  "Sabados de 10:00 a 16:00","","Ingrese la hora (HH:MM): " });
 				std::getline(cin, hora);
-			} while (!turno.setHora(hora,fecha));
+			} while (!turno.setHora(hora, fecha));
 			break;
 		case 4: // Aplicar cambios
 			// Verificamos si ya existe un turno con esa combinación de doctor, fecha y hora

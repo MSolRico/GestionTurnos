@@ -9,13 +9,13 @@ ConexionBD::~ConexionBD() {
 }
 
 void ConexionBD::abrir_conexion() {
-    conector = mysql_init(nullptr);
+    conector = mysql_init(nullptr); // inicia
     if (!conector) {
         cerr << "Error al inicializar MySQL: No se pudo asignar memoria para la conexion." << endl;
         return;
     }
 
-    conector = mysql_real_connect(conector, "localhost", "root", "", "", 3306, nullptr, 0);
+    conector = mysql_real_connect(conector, "localhost", "root", "", "", 3306, nullptr, 0); 
     if (!conector) {
         cerr << "Error al conectar a MySQL: acceda al Panel de Control de XAMPP" << mysql_error(conector) << endl;
         return;
